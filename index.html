@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HST Modern • Морзе</title>
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.svg">
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        :root {
+            --indigo: #4f46e5;
+            --orange: #f97316;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-400: #94a3b8;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --red-600: #dc2626;
+            --red-50: #fef2f2;
+            --char-w: 22px;
+            --group-gap: 44px;
+            --safe-area-inset-bottom: 0px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: var(--slate-50);
+            height: 100vh;
+            overflow: hidden;
+            color: var(--slate-800);
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+
+        header {
+            height: 56px;
+            background: white;
+            border-bottom: 1px solid var(--slate-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        aside {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--slate-200);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 110;
+            height: 100%;
+            position: absolute;
+        }
+
+        @media (max-width: 1100px) {
+            #sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                z-index: 2000;
+                width: 260px;
+                background: white;
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+                padding-bottom: 80px;
+                overflow-y: auto;
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                flex-direction: column;
+                overflow: hidden;
+                flex: 1;
+                height: auto;
+            }
+
+            main {
+                padding: 10px 5px !important;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                overflow-x: hidden;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 150px !important;
+                flex: 1;
+                min-height: 0;
+            }
+
+            #grid {
+                display: grid;
+                grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+                row-gap: 20px !important;
+                column-gap: 8vw !important;
+                padding: 15px 4.5vw !important;
+                background: white;
+                border-radius: 12px;
+                width: 100%;
+                max-width: 98vw;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                margin: 0 auto;
+                box-sizing: border-box;
+            }
+
+            .group-row {
+                display: flex !important;
+                gap: 1px !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+
+            .char {
+                font-size: clamp(9px, 2.8vw, 32px) !important;
+                width: 19% !important;
+                height: 1.4em !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                max-width: none !important;
+            }
+
+            header {
+                height: 60px;
+                z-index: 1000;
+                background: white;
+                border-bottom: 1px solid var(--slate-200);
+            }
+
+            .header-controls .btn-start {
+                display: none;
+            }
+
+            .mobile-bottom-bar {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 10px;
+                padding-bottom: calc(10px + var(--safe-area-inset-bottom));
+                border-top: 1px solid var(--slate-200);
+                z-index: 3000;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+            }
+
+            .mobile-bottom-bar .btn-start {
+                width: 100%;
+                height: 48px;
+                font-size: 16px;
+                border-radius: 12px;
+            }
+        }
+
+        .mobile-bottom-bar {
+            display: none;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 105;
+        }
+
+        .sidebar-overlay.open {
+            display: block;
+        }
+
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            scroll-behavior: smooth;
+        }
+
+        .logo {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-weight: 900;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        .logo-box {
+            background: var(--indigo);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 6px;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .time-label {
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--slate-400);
+            line-height: 1;
+        }
+
+        .time-val {
+            font-size: 18px;
+            font-family: monospace;
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+        }
+
+        .btn-start {
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: none;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--indigo);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+            min-width: 100px;
+        }
+
+        .btn-start.playing {
+            background: var(--red-50);
+            color: var(--red-600);
+            box-shadow: none;
+        }
+
+        .btn-icon {
+            background: var(--slate-100);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--slate-700);
+            display: flex;
+            transition: background 0.2s;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            position: relative;
+        }
+
+        label {
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--slate-400);
+            width: 100%;
+        }
+
+        select {
+            background: var(--slate-100);
+            border: 1px solid var(--slate-200);
+            border-radius: 8px;
+            padding: 10px 36px 10px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            width: 100%;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .num-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 3px;
+            background: var(--slate-100);
+            border: 1px solid var(--slate-200);
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .num-input-val {
+            background: transparent;
+            border: none;
+            text-align: center;
+            font-weight: 900;
+            font-size: 13px;
+            color: var(--slate-700);
+            flex: 1;
+            outline: none;
+            min-width: 40px;
+        }
+
+        .btn-step {
+            background: transparent;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--slate-400);
+            font-weight: 900;
+            font-size: 16px;
+        }
+
+        .range-wrap {
+            width: 100%;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--slate-200);
+            border-radius: 5px;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--indigo);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: var(--slate-100);
+            padding: 3px;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .btn-mode {
+            flex: 1;
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 9px;
+            font-weight: 700;
+            cursor: pointer;
+            background: transparent;
+            color: var(--slate-400);
+        }
+
+        .btn-mode.active {
+            background: white;
+            color: var(--indigo);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .btn-apply {
+            margin-top: 10px;
+            width: 100%;
+            padding: 16px;
+            background: var(--indigo);
+            color: white;
+            border-radius: 12px;
+            border: none;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(5, auto);
+            column-gap: var(--group-gap);
+            row-gap: 20px;
+            justify-content: center;
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            margin: 0 auto;
+        }
+
+        .char {
+            width: var(--char-w);
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 34px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #000;
+            transition: all 0.08s;
+        }
+
+        .char.active {
+            color: var(--orange);
+            transform: scale(1.25);
+        }
+
+        .comp-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #0b0f19;
+            z-index: 3000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            color: white;
+        }
+
+        .comp-overlay.open {
+            display: flex;
+        }
+
+        .comp-stat-val {
+            font-size: clamp(32px, 12vw, 100px);
+            font-weight: 900;
+            font-family: monospace;
+        }
+
+        .btn-comp {
+            padding: 18px 36px;
+            border-radius: 16px;
+            border: none;
+            font-weight: 900;
+            font-size: 11px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .btn-comp-exit {
+            background: var(--slate-800);
+            color: white;
+        }
+
+        .btn-comp-finish {
+            background: var(--indigo);
+            color: white;
+        }
+
+        /* Скрываем в Telegram ненужные элементы */
+        body.telegram-mode .install-hint,
+        body.telegram-mode [data-t="how_to_install"] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Инициализация Telegram -->
+    <script>
+        (function() {
+            const tg = window.Telegram?.WebApp;
+            
+            if (tg) {
+                // Активируем Telegram режим
+                document.body.classList.add('telegram-mode');
+                
+                // Инициализация
+                tg.ready();
+                tg.expand();
+                tg.enableVerticalSwipes(false);
+                
+                // Применяем тему Telegram
+                if (tg.themeParams.bg_color) {
+                    document.documentElement.style.setProperty('--slate-50', tg.themeParams.bg_color);
+                }
+                if (tg.themeParams.button_color) {
+                    document.documentElement.style.setProperty('--indigo', tg.themeParams.button_color);
+                }
+                if (tg.themeParams.text_color) {
+                    document.documentElement.style.setProperty('--slate-800', tg.themeParams.text_color);
+                }
+                
+                // Сохраняем в глобальную переменную
+                window.TelegramApp = tg;
+                
+                // Настраиваем главную кнопку
+                tg.MainButton.setText('▶️ СТАРТ').show();
+                
+                console.log('✅ Telegram Mini App инициализирован');
+            } else {
+                console.log('📱 Обычный веб-режим');
+            }
+        })();
+    </script>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <div class="comp-overlay" id="compOverlay">
+        <div class="comp-stat-box">
+            <div class="comp-stat-label" data-t="current_speed">Current Speed</div>
+            <div class="comp-stat-val" id="compSpeedVal">000</div>
+        </div>
+        <div class="comp-stat-box">
+            <div class="comp-stat-label" data-t="time">Time</div>
+            <div class="comp-stat-val" id="compTimeVal">00:00</div>
+        </div>
+        <div class="comp-actions">
+            <button class="btn-comp btn-comp-exit" id="compExitBtn" data-t="exit_mode">Exit Mode</button>
+            <button class="btn-comp btn-comp-finish" id="compFinishBtnOverlay" data-t="finish">Finish</button>
+        </div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 data-t="settings" style="margin: 0; font-size: 24px; font-weight: 700;">Settings</h2>
+                <button class="btn-icon" id="closeSettings">✕</button>
+            </div>
+            <div class="modal-scroll-body" style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="control-group">
+                    <label data-t="language">Language</label>
+                    <select id="langSelect">
+                        <option value="en">English</option>
+                        <option value="ru">Русский</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label data-t="app_mode">App Mode</label>
+                    <select id="appModeSelect">
+                        <option value="training" data-t="mode_training">Training</option>
+                        <option value="learning" data-t="mode_learning">Learning</option>
+                        <option value="rus" data-t="mode_rus">Russian Letters</option>
+                        <option value="comp" data-t="mode_comp">Competition</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label data-t="tone">Tone (Hz)</label>
+                    <div class="range-wrap">
+                        <input type="range" id="freqRange" min="300" max="1000" step="10" value="750">
+                        <div class="num-input-wrap">
+                            <button class="btn-step" id="freqDec">-</button>
+                            <input type="number" class="num-input-val" id="freqVal" value="750">
+                            <button class="btn-step" id="freqInc">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="learningOptions" style="display: none; flex-direction: column; gap: 16px;">
+                    <div class="control-group">
+                        <label data-t="exclude_chars">Exclude Characters</label>
+                        <input type="text" id="excludeChars" placeholder="QX12/.">
+                    </div>
+                    <div class="control-group">
+                        <label data-t="char_pause">Pause between chars (dots)</label>
+                        <div class="num-input-wrap">
+                            <button class="btn-step" id="pCharDec">-</button>
+                            <input type="number" class="num-input-val" id="pCharVal" value="3">
+                            <button class="btn-step" id="pCharInc">+</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label data-t="group_pause">Pause between groups (dots)</label>
+                        <div class="num-input-wrap">
+                            <button class="btn-step" id="pGroupDec">-</button>
+                            <input type="number" class="num-input-val" id="pGroupVal" value="7">
+                            <button class="btn-step" id="pGroupInc">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="compOptions" style="display: none; flex-direction: column; gap: 16px;">
+                    <div class="control-group">
+                        <label data-t="pause_between">Pause between texts (sec)</label>
+                        <div class="num-input-wrap">
+                            <button class="btn-step" id="compPauseDec">-</button>
+                            <input type="number" class="num-input-val" id="compPauseVal" value="30">
+                            <button class="btn-step" id="compPauseInc">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding-top: 20px; border-top: 1px solid var(--slate-100);">
+                <button class="btn-apply" id="applySettings" data-t="apply">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="btn-icon menu-toggle" id="menuBtn">☰</button>
+                <div class="logo">
+                    <div class="logo-box">HST</div> MODERN
+                </div>
+            </div>
+            <div class="header-controls" style="display: flex; gap: 16px; align-items: center;">
+                <div class="time-box">
+                    <span class="time-label" data-t="time">Time</span>
+                    <span class="time-val" id="elapsed">00:00</span>
+                </div>
+                <button class="btn-icon" id="openSettingsBtn">⚙️</button>
+                <button class="btn-start" id="startBtn">START</button>
+            </div>
+        </header>
+
+        <div class="mobile-bottom-bar">
+            <button class="btn-start" id="startBtnMobile">START</button>
+        </div>
+
+        <div class="main-content">
+            <aside id="sidebar">
+                <div class="sidebar-content" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+                    <div class="control-group">
+                        <label data-t="type">Type</label>
+                        <select id="typeSelect">
+                            <option value="Letters" data-t="type_letters" selected>Letters</option>
+                            <option value="Figures" data-t="type_figures">Figures</option>
+                            <option value="Mixed" data-t="type_mixed">Mixed</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label data-t="speed">Speed (CPM)</label>
+                        <div class="num-input-wrap">
+                            <button class="btn-step" id="speedDec">-</button>
+                            <input type="number" class="num-input-val" id="speedVal" value="100">
+                            <button class="btn-step" id="speedInc">+</button>
+                        </div>
+                    </div>
+                    <div class="control-group" id="displayModeWrap">
+                        <label data-t="mode">Display Mode</label>
+                        <div class="mode-toggle">
+                            <button class="btn-mode" id="modeGroupsBtn" data-t="fixed">FIXED</button>
+                            <button class="btn-mode active" id="mode1minBtn">1 MIN</button>
+                        </div>
+                    </div>
+                    <div class="control-group" id="numGroupsWrap" style="display: none;">
+                        <label data-t="groups">Groups</label>
+                        <div class="num-input-wrap">
+                            <button class="btn-step" id="groupsDec">-</button>
+                            <input type="number" class="num-input-val" id="groupsVal" value="25">
+                            <button class="btn-step" id="groupsInc">+</button>
+                        </div>
+                    </div>
+                    <div id="compButtons" style="display: none; flex-direction: column; gap: 10px;">
+                        <button class="btn-sidebar-secondary" id="compHideBtn" data-t="hide_screen">Hide Screen</button>
+                        <button class="btn-sidebar-secondary" id="compFinishBtn" data-t="finish">Finish</button>
+                    </div>
+                    
+                    <!-- Контактный блок -->
+                    <div style="margin-top: auto; padding-top: 40px; text-align: center;">
+                        <div style="opacity: 0.4; margin-bottom: 10px; font-size: 10px; font-weight: 800;">
+                            DEVELOPED BY<br>NICKOLAY BAKHVALOV
+                        </div>
+                        <a id="telegramContactLink" href="#" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #229ED9; color: white; border-radius: 10px; text-decoration: none; font-size: 11px; font-weight: 900;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.668l-2.95-.924c-.64-.203-.658-.64.136-.954l11.566-4.458c.537-.194 1.006.131.972.889z"/>
+                            </svg>
+                            <span data-t="write_author">Написать</span>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+            <main class="custom-scrollbar">
+                <div id="grid"></div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация Telegram контакта
+        (function() {
+            const contactLink = document.getElementById('telegramContactLink');
+            if (window.TelegramApp) {
+                // В Telegram - показываем информацию о боте
+                contactLink.href = '#';
+                contactLink.onclick = (e) => {
+                    e.preventDefault();
+                    window.TelegramApp.showPopup({
+                        title: 'HST Modern',
+                        message: 'Спасибо за использование тренажёра!\n\nПо вопросам и предложениям: @Nikolay_Bah',
+                        buttons: [{type: 'close', text: 'OK'}]
+                    });
+                };
+            } else {
+                // В обычном браузере - открываем Telegram
+                contactLink.href = 'https://t.me/Nikolay_Bah';
+                contactLink.target = '_blank';
+            }
+        })();
+
+        // Переводы
+        const TRANSLATIONS = {
+            en: { 
+                settings: "Settings", language: "Language", app_mode: "App Mode", 
+                mode_training: "Training", mode_learning: "Learning", mode_rus: "Russian Letters", 
+                mode_comp: "Competition", tone: "Tone (Hz)", exclude_chars: "Exclude Characters",
+                char_pause: "Pause between chars", group_pause: "Pause between groups",
+                time: "Time", type: "Type", type_letters: "Letters", type_figures: "Figures",
+                type_mixed: "Mixed", speed: "Speed (CPM)", mode: "Display Mode", fixed: "FIXED",
+                groups: "Groups", apply: "Apply", start: "START", stop: "STOP", mode_1min: "1 MIN",
+                pause_between: "Pause between texts (sec)", hide_screen: "Hide Screen",
+                exit_mode: "Show Main Screen", finish: "Finish", next_text_in: "Next text in",
+                current_speed: "Current Speed", write_author: "Contact"
+            },
+            ru: { 
+                settings: "Настройки", language: "Язык", app_mode: "Режим работы",
+                mode_training: "Тренировка", mode_learning: "Обучение", mode_rus: "Русские буквы",
+                mode_comp: "Соревнование", tone: "Тон (Гц)", exclude_chars: "Исключить знаки",
+                char_pause: "Пауза между знаками", group_pause: "Пауза между группами",
+                time: "Время", type: "Тип текста", type_letters: "Буквы", type_figures: "Цифры",
+                type_mixed: "Смесь", speed: "Скорость (зн/мин)", mode: "Режим отображения",
+                fixed: "ФИКС.", groups: "Группы", apply: "Применить", start: "СТАРТ", stop: "СТОП",
+                mode_1min: "1 МИН", pause_between: "Пауза между текстами (сек)",
+                hide_screen: "Скрыть экран", exit_mode: "Показать экран", finish: "Закончить",
+                next_text_in: "Следующий текст через", current_speed: "Текущая скорость",
+                write_author: "Написать"
+            }
+        };
+
+        // Азбука Морзе
+        const M = {
+            "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", 
+            "H": "....", "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", 
+            "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-", "U": "..-", 
+            "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..",
+            "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", 
+            "6": "-....", "7": "--...", "8": "---..", "9": "----.", "0": "-----",
+            "А": ".-", "Б": "-...", "В": ".--", "Г": "--.", "Д": "-..", "Е": ".", "Ж": "...-", 
+            "З": "--..", "И": "..", "Й": ".---", "К": "-.-", "Л": ".-..", "М": "--", "Н": "-.", 
+            "О": "---", "П": ".--.", "Р": ".-.", "С": "...", "Т": "-", "У": "..-", "Ф": "..-.", 
+            "Х": "....", "Ц": "-.-.", "Ч": "---.", "Ш": "----", "Щ": "--.-", "Э": "..-..", 
+            "Ю": "..--", "Я": ".-.-", "Ь": "-..-", "Ы": "-.--", "Ъ": "--.--",
+            ".": ".-.-.-", ",": "--..--", "?": "..--..", "/": "-..-.", "AR": ".-.-."
+        };
+
+        // Аудио движок
+        class MorseEngine {
+            constructor() {
+                this.ctx = null;
+                this.freq = 750;
+                this.vQueue = [];
+                this.tokens = [];
+                this.nextT = 0;
+                this.dot = 0.05;
+                this.pc = 3;
+                this.pg = 7;
+                this.onS = null;
+                this.onD = null;
+                this.running = false;
+                this.lookahead = 0.4;
+                this.scheduleId = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    try {
+                        this.ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+                        this.comp = this.ctx.createDynamicsCompressor();
+                        this.comp.threshold.setValueAtTime(-24, this.ctx.currentTime);
+                        this.comp.knee.setValueAtTime(30, this.ctx.currentTime);
+                        this.comp.ratio.setValueAtTime(12, this.ctx.currentTime);
+                        this.comp.attack.setValueAtTime(0.003, this.ctx.currentTime);
+                        this.comp.release.setValueAtTime(0.25, this.ctx.currentTime);
+                        this.gain = this.ctx.createGain();
+                        this.gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                        this.gain.connect(this.comp);
+                        this.comp.connect(this.ctx.destination);
+                    } catch (e) { console.error("Audio init error:", e); }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+            }
+
+            play(toks, dot, pc, pg, onS, onD) {
+                this.stop();
+                this.init();
+                this.tokens = [...toks];
+                this.dot = dot; this.pc = pc; this.pg = pg;
+                this.onS = onS; this.onD = onD;
+                this.running = true;
+
+                const o = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                const f = this.ctx.createBiquadFilter();
+                const now = this.ctx.currentTime;
+                f.type = 'lowpass'; 
+                f.frequency.setValueAtTime(2400, now); 
+                f.Q.setValueAtTime(0, now);
+                o.type = 'sine'; 
+                o.frequency.setValueAtTime(this.freq, now);
+                g.gain.setValueAtTime(0, now);
+                o.connect(g); g.connect(f); f.connect(this.gain);
+                this.osc = o; this.subGain = g;
+
+                this.nextT = now + 0.25; 
+                this.gain.gain.cancelScheduledValues(now);
+                this.gain.gain.linearRampToValueAtTime(0.5, now + 0.05);
+                o.start(now);
+                this._tick();
+            }
+
+            _tick() {
+                if (!this.running || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const transition = 0.002;
+
+                while (this.tokens.length > 0 && this.nextT < now + this.lookahead) {
+                    const tk = this.tokens.shift();
+                    this.vQueue.push({ t: this.nextT, g: tk.g, c: tk.c });
+                    if (tk.m) {
+                        for (let b of tk.m) {
+                            const d = (b === '.' ? this.dot : this.dot * 3);
+                            this.subGain.gain.setValueAtTime(0, this.nextT);
+                            this.subGain.gain.linearRampToValueAtTime(1, this.nextT + transition);
+                            this.subGain.gain.setValueAtTime(1, this.nextT + d - transition);
+                            this.subGain.gain.linearRampToValueAtTime(0, this.nextT + d);
+                            this.nextT += d + this.dot;
+                        }
+                        this.nextT += this.dot * (this.pc - 1);
+                    }
+                    if (tk.isSpace) this.nextT += this.dot * (this.pg - this.pc);
+                }
+
+                const outLat = (this.ctx.outputLatency || 0.08); 
+                while (this.vQueue.length > 0 && this.vQueue[0].t <= now - outLat) {
+                    const ev = this.vQueue.shift();
+                    if (this.onS) this.onS(ev.g, ev.c);
+                }
+
+                if (this.tokens.length === 0 && this.vQueue.length === 0 && now > this.nextT + 0.2) {
+                    this.stop();
+                    if (this.onD) this.onD();
+                    return;
+                }
+                this.scheduleId = requestAnimationFrame(() => this._tick());
+            }
+
+            stop() {
+                this.running = false;
+                if (this.scheduleId) cancelAnimationFrame(this.scheduleId);
+                this.vQueue = [];
+                this.tokens = [];
+                if (this.osc) {
+                    try {
+                        const now = this.ctx ? this.ctx.currentTime : 0;
+                        if (this.gain) {
+                            this.gain.gain.cancelScheduledValues(now);
+                            this.gain.gain.linearRampToValueAtTime(0, now + 0.02);
+                        }
+                        this.osc.stop(now + 0.1);
+                    } catch (e) {}
+                    this.osc = null;
+                }
+            }
+        }
+
+        // Состояние приложения
+        let speed = 100, numGroups = 25, freq = 750, mode = '1min', textType = 'Letters', 
+            playing = false, groups = [], lang = 'ru', appMode = 'training';
+        let pChar = 3, pGroup = 7, excluded = "";
+        let compPause = 30, compLogs = [], compFinishedCount = 0;
+        const engine = new MorseEngine();
+        let timerId = null, countdownTimer = null, wakeLock = null;
+
+        const requestWakeLock = async () => {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {}
+        };
+
+        const releaseWakeLock = () => {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => { wakeLock = null; });
+            }
+        };
+
+        const getUnits = (toks, pc, pg) => {
+            let u = 0;
+            toks.forEach(tk => {
+                if (tk.m) { 
+                    tk.m.split('').forEach(b => { u += (b === '.' ? 2 : 4); }); 
+                    u += (pc - 1); 
+                }
+                if (tk.isSpace) u += (pg - pc);
+            });
+            return u;
+        };
+
+        const updateLang = () => {
+            document.querySelectorAll('[data-t]').forEach(el => {
+                const k = el.getAttribute('data-t');
+                if (TRANSLATIONS[lang] && TRANSLATIONS[lang][k]) {
+                    el.innerText = TRANSLATIONS[lang][k];
+                }
+            });
+            
+            // Обновляем кнопки старт
+            const startText = playing ? TRANSLATIONS[lang].stop : TRANSLATIONS[lang].start;
+            document.querySelectorAll('.btn-start').forEach(el => el.innerText = startText);
+            
+            // Обновляем главную кнопку Telegram
+            if (window.TelegramApp) {
+                window.TelegramApp.MainButton.setText(playing ? '⏹️ СТОП' : '▶️ СТАРТ');
+            }
+            
+            document.getElementById('mode1minBtn').innerText = TRANSLATIONS[lang].mode_1min;
+        };
+
+        const updateUI = () => {
+            document.getElementById('speedVal').value = speed;
+            document.getElementById('groupsVal').value = numGroups;
+            document.getElementById('freqVal').value = freq;
+            document.getElementById('freqRange').value = freq;
+            document.getElementById('pCharVal').value = pChar;
+            document.getElementById('pGroupVal').value = pGroup;
+            document.getElementById('excludeChars').value = excluded;
+            document.getElementById('compPauseVal').value = compPause;
+            
+            if (document.getElementById('numGroupsWrap')) {
+                document.getElementById('numGroupsWrap').style.display = 
+                    (mode === 'Groups' && appMode !== 'comp') ? 'flex' : 'none';
+            }
+            if (document.getElementById('displayModeWrap')) {
+                document.getElementById('displayModeWrap').style.display = 
+                    appMode === 'comp' ? 'none' : 'flex';
+            }
+            
+            document.getElementById('modeGroupsBtn').classList.toggle('active', mode === 'Groups');
+            document.getElementById('mode1minBtn').classList.toggle('active', mode === '1min');
+            document.getElementById('learningOptions').style.display = 
+                (appMode === 'learning' || appMode === 'rus') ? 'flex' : 'none';
+            document.getElementById('compOptions').style.display = 
+                appMode === 'comp' ? 'flex' : 'none';
+            document.getElementById('compButtons').style.display = 
+                appMode === 'comp' ? 'flex' : 'none';
+            
+            document.getElementById('langSelect').value = lang;
+            document.getElementById('appModeSelect').value = appMode;
+            
+            updateLang();
+        };
+
+        const generate = (noRender) => {
+            const count = (mode === '1min' || appMode === 'comp') ? Math.ceil(speed / 5) : numGroups;
+            let poolStr = textType === 'Letters' ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : 
+                         textType === 'Figures' ? "0123456789" : 
+                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,/?=";
+            
+            if (appMode === 'rus') {
+                poolStr = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯЬЫ";
+            }
+            
+            let pool = poolStr.split('');
+            if ((appMode === 'learning' || appMode === 'rus') && excluded) {
+                const ex = excluded.toUpperCase();
+                pool = pool.filter(c => !ex.includes(c));
+            }
+            if (pool.length === 0) pool = ["?"];
+
+            groups = [];
+            for (let i = 0; i < count; i++) {
+                let g = "";
+                for (let j = 0; j < 5; j++) {
+                    g += pool[Math.floor(Math.random() * pool.length)];
+                }
+                groups.push(g);
+            }
+            
+            if (!noRender) { 
+                render(); 
+                document.getElementById('elapsed').innerText = '00:00'; 
+            }
+            engine.stop();
+        };
+
+        const render = () => {
+            const grid = document.getElementById('grid'); 
+            grid.innerHTML = '';
+            groups.forEach((g, gi) => {
+                const row = document.createElement('div'); 
+                row.className = 'group-row';
+                g.split('').forEach((c, ci) => { 
+                    const span = document.createElement('div'); 
+                    span.className = 'char'; 
+                    span.id = `c-${gi}-${ci}`; 
+                    span.innerText = c; 
+                    row.appendChild(span); 
+                });
+                grid.appendChild(row);
+            });
+        };
+
+        const start = () => {
+            requestWakeLock();
+            closeSidebar();
+            
+            if (playing) { 
+                stopAll(); 
+                return; 
+            }
+            
+            generate();
+            if (appMode === 'comp' && compFinishedCount === 0) compLogs = [];
+            playing = true; 
+            updateUI(); 
+            engine.freq = freq;
+
+            const head = [];
+            if (appMode === 'comp') {
+                const announceChars = (textType === 'Letters') ? ['O','O','O'] : ['0','0','0'];
+                announceChars.forEach((c, i) => head.push({ g: -2, c: i, m: M[c] || '' }));
+                head.push({ isSpace: true, m: '' });
+                String(speed).split('').forEach((d, i) => head.push({ g: -2, c: 10 + i, m: M[d] || '' }));
+                head.push({ isSpace: true, m: '' });
+            }
+            "VVV=".split('').forEach((c, i) => head.push({ g: -2, c: 20 + i, m: M[c] || '' })); 
+            head.push({ isSpace: true, m: '' });
+            
+            const body = []; 
+            groups.forEach((g, gi) => { 
+                g.split('').forEach((c, ci) => body.push({ g: gi, c: ci, m: M[c.toUpperCase()] || '' })); 
+                body.push({ isSpace: true, m: '' }); 
+            });
+            
+            const tail = []; 
+            tail.push({ g: -3, c: 0, m: M['AR'] });
+
+            const totalChars = groups.length * 5;
+            const targetSecs = (totalChars / speed) * 60;
+            const unitsBody = getUnits(body, pChar, pGroup);
+            const unitsHead = getUnits(head, pChar, pGroup);
+            const realDot = targetSecs / unitsBody;
+            const headSecs = unitsHead * realDot;
+
+            if (appMode === 'comp') {
+                document.getElementById('compSpeedVal').innerText = speed;
+                document.getElementById('compFinishBtn').disabled = true;
+                document.getElementById('compFinishBtnOverlay').disabled = true;
+                compLogs.push({ speed, text: groups.join(' ') });
+            }
+
+            const startTime = Date.now();
+            const startT = startTime + headSecs * 1000;
+            document.getElementById('elapsed').innerText = '00:00';
+            document.getElementById('compTimeVal').innerText = '00:00';
+
+            timerId = setInterval(() => {
+                const d = Date.now() - startT;
+                if (d < 0) return;
+                const m = Math.floor(d / 60000).toString().padStart(2, '0');
+                const s = Math.floor((d % 60000) / 1000).toString().padStart(2, '0');
+                const ts = `${m}:${s}`; 
+                document.getElementById('elapsed').innerText = ts; 
+                document.getElementById('compTimeVal').innerText = ts;
+                if (d >= targetSecs * 1000) { 
+                    clearInterval(timerId); 
+                    timerId = null; 
+                }
+            }, 100);
+
+            let lastActiveCharEl = null;
+            engine.play(head.concat(body, tail), realDot, pChar, pGroup, (g, c) => {
+                const el = document.getElementById(`c-${g}-${c}`);
+                if (el) {
+                    if (lastActiveCharEl) lastActiveCharEl.classList.remove('active');
+                    el.classList.add('active');
+                    lastActiveCharEl = el;
+                }
+            }, onDone);
+        };
+
+        const onDone = () => {
+            if (appMode === 'comp') {
+                compFinishedCount++;
+                document.getElementById('compFinishBtn').disabled = false;
+                document.getElementById('compFinishBtnOverlay').disabled = false;
+                startCompPause();
+            } else { 
+                stopAll(); 
+            }
+        };
+
+        const startCompPause = () => {
+            playing = false; 
+            if (timerId) clearInterval(timerId); 
+            timerId = null; 
+            updateUI();
+            let remain = compPause;
+            countdownTimer = setInterval(() => {
+                remain--;
+                if (remain <= 0) {
+                    clearInterval(countdownTimer); 
+                    countdownTimer = null;
+                    speed += 10; 
+                    generate(); 
+                    start();
+                } else {
+                    const msg = `${TRANSLATIONS[lang].next_text_in}: ${remain}s`;
+                    document.getElementById('elapsed').innerText = msg;
+                    document.getElementById('compTimeVal').innerText = msg;
+                }
+            }, 1000);
+        };
+
+        const stopAll = () => {
+            playing = false;
+            releaseWakeLock();
+            if (timerId) clearInterval(timerId); 
+            timerId = null;
+            if (countdownTimer) clearInterval(countdownTimer); 
+            countdownTimer = null;
+            engine.stop(); 
+            updateUI();
+            document.querySelectorAll('.char.active').forEach(e => e.classList.remove('active'));
+        };
+
+        const finishComp = () => {
+            if (compLogs.length === 0) return;
+            
+            // Отправляем данные в Telegram если доступно
+            if (window.TelegramApp) {
+                window.TelegramApp.sendData(JSON.stringify({
+                    action: 'comp_finished',
+                    speed: speed,
+                    logs: compLogs.length,
+                    timestamp: new Date().toISOString()
+                }));
+                window.TelegramApp.close();
+            }
+            
+            const content = compLogs.map(l => `SPEED: ${l.speed} CPM\n------------------\n${l.text}`).join('\n\n\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); 
+            a.download = `HST_Comp_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            a.click();
+            
+            compFinishedCount = 0; 
+            compLogs = []; 
+            stopAll();
+            releaseWakeLock();
+            document.getElementById('compOverlay').classList.remove('open');
+        };
+
+        const closeSidebar = () => { 
+            document.getElementById('sidebar').classList.remove('open'); 
+            document.getElementById('overlay').classList.remove('open'); 
+        };
+
+        // Инициализация обработчиков
+        document.getElementById('menuBtn').onclick = () => {
+            if (document.getElementById('compOverlay').classList.contains('open')) return;
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
+        };
+        
+        document.getElementById('overlay').onclick = closeSidebar;
+        
+        document.getElementById('openSettingsBtn').onclick = () => {
+            document.getElementById('langSelect').value = lang;
+            document.getElementById('appModeSelect').value = appMode;
+            document.getElementById('freqVal').value = freq;
+            document.getElementById('freqRange').value = freq;
+            document.getElementById('settingsModal').classList.add('open');
+        };
+        
+        document.getElementById('closeSettings').onclick = () => 
+            document.getElementById('settingsModal').classList.remove('open');
+        
+        document.getElementById('applySettings').onclick = () => {
+            lang = document.getElementById('langSelect').value;
+            appMode = document.getElementById('appModeSelect').value;
+            excluded = document.getElementById('excludeChars').value;
+            pChar = parseInt(document.getElementById('pCharVal').value) || 3;
+            pGroup = parseInt(document.getElementById('pGroupVal').value) || 7;
+            compPause = parseInt(document.getElementById('compPauseVal').value) || 30;
+            freq = parseInt(document.getElementById('freqVal').value) || 750;
+            
+            document.getElementById('settingsModal').classList.remove('open');
+            updateUI();
+            generate();
+            closeSidebar();
+        };
+
+        document.getElementById('typeSelect').onchange = (e) => { textType = e.target.value; generate(); };
+        document.getElementById('speedDec').onclick = () => { speed = Math.max(20, speed - 10); updateUI(); };
+        document.getElementById('speedInc').onclick = () => { speed = Math.min(400, speed + 10); updateUI(); };
+        document.getElementById('modeGroupsBtn').onclick = () => { mode = 'Groups'; updateUI(); generate(); };
+        document.getElementById('mode1minBtn').onclick = () => { mode = '1min'; updateUI(); generate(); };
+        document.getElementById('compHideBtn').onclick = () => { 
+            document.getElementById('compOverlay').classList.add('open'); 
+            closeSidebar(); 
+        };
+        document.getElementById('compExitBtn').onclick = () => 
+            document.getElementById('compOverlay').classList.remove('open');
+        document.getElementById('compFinishBtn').onclick = finishComp;
+        document.getElementById('compFinishBtnOverlay').onclick = finishComp;
+        
+        document.querySelectorAll('.btn-start').forEach(btn => btn.onclick = start);
+        
+        // Синхронизация с кнопкой Telegram
+        if (window.TelegramApp) {
+            window.TelegramApp.MainButton.onClick(start);
+            
+            // Обновляем текст кнопки при изменении состояния
+            const observer = new MutationObserver(() => {
+                const btn = document.querySelector('.btn-start');
+                if (btn) {
+                    const isPlaying = btn.innerText.includes('STOP') || btn.innerText.includes('СТОП');
+                    window.TelegramApp.MainButton.setText(isPlaying ? '⏹️ СТОП' : '▶️ СТАРТ');
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+        }
+        
+        // Запуск
+        generate(); 
+        updateUI();
+        
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => 
+                    console.log('SW registration failed:', err)
+                );
+            });
+        }
+    </script>
+</body>
+
+</html>
