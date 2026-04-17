@@ -3,15 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>HST Modern • Морзе</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HST Modern v1.0</title>
     <meta name="theme-color" content="#4f46e5">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.svg">
-    
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
         :root {
             --indigo: #4f46e5;
@@ -27,7 +23,6 @@
             --red-50: #fef2f2;
             --char-w: 22px;
             --group-gap: 44px;
-            --safe-area-inset-bottom: 0px;
         }
 
         * {
@@ -38,12 +33,11 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background: var(--slate-50);
             height: 100vh;
             overflow: hidden;
             color: var(--slate-800);
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         .app-container {
@@ -86,6 +80,7 @@
             position: absolute;
         }
 
+        /* MOBILE OPTIMIZATIONS (Portrait & Landscape) */
         @media (max-width: 1100px) {
             #sidebar {
                 position: fixed;
@@ -126,7 +121,7 @@
                 overflow-x: hidden;
                 overflow-y: auto !important;
                 -webkit-overflow-scrolling: touch;
-                padding-bottom: 150px !important;
+                padding-bottom: 250px !important; /* Extremely large spacer to ensure scroll */
                 flex: 1;
                 min-height: 0;
             }
@@ -136,7 +131,7 @@
                 grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
                 row-gap: 20px !important;
                 column-gap: 8vw !important;
-                padding: 15px 4.5vw !important;
+                padding: 15px 4.5vw !important; /* Added more space on left/right for visual effect */
                 background: white;
                 border-radius: 12px;
                 width: 100%;
@@ -154,7 +149,7 @@
             }
 
             .char {
-                font-size: clamp(9px, 2.8vw, 32px) !important;
+                font-size: clamp(9px, 2.8vw, 32px) !important; /* Slightly smaller to fit added padding */
                 width: 19% !important;
                 height: 1.4em !important;
                 display: flex !important;
@@ -182,7 +177,6 @@
                 right: 0;
                 background: white;
                 padding: 10px;
-                padding-bottom: calc(10px + var(--safe-area-inset-bottom));
                 border-top: 1px solid var(--slate-200);
                 z-index: 3000;
                 box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
@@ -194,10 +188,92 @@
                 font-size: 16px;
                 border-radius: 12px;
             }
+
+            .btn-update {
+                position: static;
+                width: 100% !important;
+                margin-bottom: 10px;
+            }
         }
 
         .mobile-bottom-bar {
             display: none;
+        }
+
+        /* LANDSCAPE TWEAKS (Low height screens) */
+        @media (max-height: 520px) {
+            header {
+                height: 44px;
+                min-height: 44px;
+                padding: 0 10px;
+            }
+
+            .logo {
+                scale: 0.8;
+                transform-origin: left;
+            }
+
+            .time-box {
+                scale: 0.8;
+            }
+
+            .main-content {
+                height: calc(100vh - 44px);
+                overflow: hidden;
+            }
+
+            main {
+                height: calc(100vh - 120px);
+                overflow-y: auto !important;
+            }
+
+            #sidebar {
+                padding: 10px;
+                height: calc(100vh - 44px);
+                overflow-y: auto !important;
+            }
+
+            .sidebar-content {
+                gap: 8px !important;
+            }
+
+            .btn-update {
+                margin-bottom: 8px;
+                padding: 8px;
+            }
+
+            .mobile-bottom-bar {
+                padding: 8px;
+            }
+
+            .mobile-bottom-bar .btn-start {
+                height: 40px;
+                font-size: 14px;
+            }
+
+            /* Modal landscape optimization */
+            .modal-content {
+                padding: 15px;
+                gap: 10px;
+                max-height: 95vh;
+            }
+
+            .modal-content h2 {
+                font-size: 18px !important;
+            }
+
+            .modal-scroll-body {
+                gap: 12px !important;
+            }
+
+            .control-group {
+                gap: 4px !important;
+            }
+
+            .btn-apply {
+                height: 44px;
+                margin: 0;
+            }
         }
 
         .sidebar-overlay {
@@ -291,6 +367,10 @@
             transition: background 0.2s;
         }
 
+        .btn-icon:hover {
+            background: var(--slate-200);
+        }
+
         .control-group {
             display: flex;
             flex-direction: column;
@@ -316,11 +396,31 @@
             font-weight: 700;
             width: 100%;
             outline: none;
+            transition: all 0.2s;
             appearance: none;
             -webkit-appearance: none;
+            -moz-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 12px center;
+        }
+
+        select:focus {
+            border-color: var(--indigo);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            appearance: none;
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            appearance: none;
+            -moz-appearance: textfield;
         }
 
         .num-input-wrap {
@@ -343,6 +443,9 @@
             color: var(--slate-700);
             flex: 1;
             outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
             min-width: 40px;
         }
 
@@ -353,8 +456,13 @@
             cursor: pointer;
             border-radius: 6px;
             color: var(--slate-400);
+            transition: color 0.2s;
             font-weight: 900;
             font-size: 16px;
+        }
+
+        .btn-step:hover {
+            color: var(--indigo);
         }
 
         .range-wrap {
@@ -372,6 +480,7 @@
             border-radius: 5px;
             appearance: none;
             -webkit-appearance: none;
+            outline: none;
         }
 
         input[type="range"]::-webkit-slider-thumb {
@@ -404,6 +513,7 @@
             cursor: pointer;
             background: transparent;
             color: var(--slate-400);
+            transition: all 0.2s;
         }
 
         .btn-mode.active {
@@ -412,6 +522,33 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
+        .divider {
+            border-top: 1px solid var(--slate-100);
+            width: 100%;
+            height: 1px;
+            margin: 4px 0;
+        }
+
+        .btn-update {
+            width: 100%;
+            padding: 14px;
+            background: var(--slate-900);
+            color: white;
+            border-radius: 10px;
+            border: none;
+            font-size: 9px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-update:hover {
+            background: #000;
+        }
+
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -422,6 +559,7 @@
             background: rgba(15, 23, 42, 0.4);
             backdrop-filter: blur(8px);
             z-index: 4000;
+            /* Above bottom bar */
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -434,11 +572,31 @@
         .modal-content {
             background: white;
             padding: 30px;
+            padding-bottom: 40px;
+            /* Space for Apply button */
             border-radius: 24px;
             width: 100%;
             max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
             max-height: 90vh;
             overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 16px;
+            color: var(--slate-900);
         }
 
         .btn-apply {
@@ -453,6 +611,26 @@
             font-weight: 900;
             text-transform: uppercase;
             cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-apply:active {
+            transform: scale(0.98);
+        }
+
+        /* SHEET UI */
+        .page-sheet {
+            background: white;
+            border: 1px solid var(--slate-200);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            padding: 32px 48px;
+            width: fit-content;
+            min-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         #grid {
@@ -464,7 +642,29 @@
             background: white;
             padding: 40px;
             border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
             margin: 0 auto;
+            width: max-content;
+        }
+
+        .group-row {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            width: max-content;
+        }
+
+        main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Center horizontally */
+            justify-content: flex-start;
+            /* Top align */
         }
 
         .char {
@@ -479,6 +679,7 @@
             text-transform: uppercase;
             color: #000;
             transition: all 0.08s;
+            flex-shrink: 0;
         }
 
         .char.active {
@@ -486,6 +687,7 @@
             transform: scale(1.25);
         }
 
+        /* COMP OVERLAY */
         .comp-overlay {
             display: none;
             position: fixed;
@@ -503,10 +705,36 @@
             display: flex;
         }
 
+        .comp-stat-box {
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .comp-stat-label {
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--indigo);
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
         .comp-stat-val {
             font-size: clamp(32px, 12vw, 100px);
             font-weight: 900;
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
+            color: white;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .comp-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn-comp {
@@ -516,66 +744,130 @@
             font-weight: 900;
             font-size: 11px;
             text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-comp-exit {
             background: var(--slate-800);
             color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .btn-comp-finish {
             background: var(--indigo);
             color: white;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
         }
 
-        /* Скрываем в Telegram ненужные элементы */
-        body.telegram-mode .install-hint,
-        body.telegram-mode [data-t="how_to_install"] {
-            display: none !important;
+        .btn-comp:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            box-shadow: none;
         }
+
+        @media (min-width: 1101px) and (min-height: 501px) {
+            aside {
+                position: static;
+                transform: none;
+                box-shadow: 1px 0 2px rgba(0, 0, 0, 0.05);
+            }
+
+            .menu-toggle,
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            :root {
+                --char-w: 18px;
+                --group-gap: 36px;
+            }
+
+            .page-sheet {
+                min-width: auto;
+                width: 95vw;
+                padding: 20px;
+            }
+
+            .char {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 768px) or (max-height: 500px) {
+            :root {
+                --char-w: 14px;
+                --group-gap: 28px;
+            }
+
+            .page-sheet {
+                padding: 12px;
+            }
+
+            .row-grid {
+                row-gap: 12px;
+            }
+
+            .char {
+                font-size: 22px;
+                height: 26px;
+            }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--slate-200);
+            border-radius: 10px;
+        }
+
+        input[type="text"] {
+            background: var(--slate-100);
+            border: 1px solid var(--slate-200);
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            font-weight: 700;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--indigo);
+            background: white;
+        }
+
+        .btn-sidebar-secondary {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--slate-200);
+            background: white;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: var(--slate-700);
+            display: none;
+        }
+
+        .btn-sidebar-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        details[open] .install-chevron { transform: rotate(180deg); }
+        details summary::-webkit-details-marker { display: none; }
+        details summary { outline: none; }
     </style>
 </head>
 
 <body>
-    <!-- Инициализация Telegram -->
-    <script>
-        (function() {
-            const tg = window.Telegram?.WebApp;
-            
-            if (tg) {
-                // Активируем Telegram режим
-                document.body.classList.add('telegram-mode');
-                
-                // Инициализация
-                tg.ready();
-                tg.expand();
-                tg.enableVerticalSwipes(false);
-                
-                // Применяем тему Telegram
-                if (tg.themeParams.bg_color) {
-                    document.documentElement.style.setProperty('--slate-50', tg.themeParams.bg_color);
-                }
-                if (tg.themeParams.button_color) {
-                    document.documentElement.style.setProperty('--indigo', tg.themeParams.button_color);
-                }
-                if (tg.themeParams.text_color) {
-                    document.documentElement.style.setProperty('--slate-800', tg.themeParams.text_color);
-                }
-                
-                // Сохраняем в глобальную переменную
-                window.TelegramApp = tg;
-                
-                // Настраиваем главную кнопку
-                tg.MainButton.setText('▶️ СТАРТ').show();
-                
-                console.log('✅ Telegram Mini App инициализирован');
-            } else {
-                console.log('📱 Обычный веб-режим');
-            }
-        })();
-    </script>
-
     <div class="sidebar-overlay" id="overlay"></div>
 
     <div class="comp-overlay" id="compOverlay">
@@ -594,12 +886,13 @@
     </div>
 
     <div class="modal" id="settingsModal">
-        <div class="modal-content">
+        <div class="modal-content" style="padding-top: 20px; padding-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <h2 data-t="settings" style="margin: 0; font-size: 24px; font-weight: 700;">Settings</h2>
                 <button class="btn-icon" id="closeSettings">✕</button>
             </div>
-            <div class="modal-scroll-body" style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="modal-scroll-body"
+                style="flex: 1; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 16px;">
                 <div class="control-group">
                     <label data-t="language">Language</label>
                     <select id="langSelect">
@@ -620,48 +913,46 @@
                     <label data-t="tone">Tone (Hz)</label>
                     <div class="range-wrap">
                         <input type="range" id="freqRange" min="300" max="1000" step="10" value="750">
-                        <div class="num-input-wrap">
-                            <button class="btn-step" id="freqDec">-</button>
-                            <input type="number" class="num-input-val" id="freqVal" value="750">
-                            <button class="btn-step" id="freqInc">+</button>
-                        </div>
+                        <div class="num-input-wrap"><button class="btn-step" id="freqDec">-</button><input type="number"
+                                class="num-input-val" id="freqVal" value="750"><button class="btn-step"
+                                id="freqInc">+</button></div>
                     </div>
                 </div>
                 <div id="learningOptions" style="display: none; flex-direction: column; gap: 16px;">
                     <div class="control-group">
                         <label data-t="exclude_chars">Exclude Characters</label>
-                        <input type="text" id="excludeChars" placeholder="QX12/.">
+                        <input type="text" id="excludeChars" placeholder="QX12/."
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--slate-200);">
                     </div>
                     <div class="control-group">
                         <label data-t="char_pause">Pause between chars (dots)</label>
-                        <div class="num-input-wrap">
-                            <button class="btn-step" id="pCharDec">-</button>
-                            <input type="number" class="num-input-val" id="pCharVal" value="3">
-                            <button class="btn-step" id="pCharInc">+</button>
-                        </div>
+                        <div class="num-input-wrap"><button class="btn-step" id="pCharDec">-</button><input type="number"
+                                class="num-input-val" id="pCharVal" value="3"><button class="btn-step"
+                                id="pCharInc">+</button></div>
                     </div>
                     <div class="control-group">
                         <label data-t="group_pause">Pause between groups (dots)</label>
-                        <div class="num-input-wrap">
-                            <button class="btn-step" id="pGroupDec">-</button>
-                            <input type="number" class="num-input-val" id="pGroupVal" value="7">
-                            <button class="btn-step" id="pGroupInc">+</button>
-                        </div>
+                        <div class="num-input-wrap"><button class="btn-step" id="pGroupDec">-</button><input type="number"
+                                class="num-input-val" id="pGroupVal" value="7"><button class="btn-step"
+                                id="pGroupInc">+</button></div>
                     </div>
                 </div>
-                <div id="compOptions" style="display: none; flex-direction: column; gap: 16px;">
-                    <div class="control-group">
-                        <label data-t="pause_between">Pause between texts (sec)</label>
-                        <div class="num-input-wrap">
-                            <button class="btn-step" id="compPauseDec">-</button>
-                            <input type="number" class="num-input-val" id="compPauseVal" value="30">
-                            <button class="btn-step" id="compPauseInc">+</button>
+                    <div id="compOptions" style="display: none; flex-direction: column; gap: 16px;">
+                        <div class="divider"></div>
+                        <div class="control-group">
+                            <label data-t="pause_between">Pause between texts (sec)</label>
+                            <div class="num-input-wrap">
+                                <button class="btn-step" id="compPauseDec">-</button>
+                                <input type="number" class="num-input-val" id="compPauseVal" value="30">
+                                <button class="btn-step" id="compPauseInc">+</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
             </div>
             <div style="padding-top: 20px; border-top: 1px solid var(--slate-100);">
-                <button class="btn-apply" id="applySettings" data-t="apply">Apply</button>
+                <button class="btn-apply" id="applySettings" data-t="apply"
+                    style="margin: 0; width: 100%; box-shadow: 0 10px 20px rgba(71, 71, 235, 0.2);">Apply</button>
             </div>
         </div>
     </div>
@@ -675,10 +966,8 @@
                 </div>
             </div>
             <div class="header-controls" style="display: flex; gap: 16px; align-items: center;">
-                <div class="time-box">
-                    <span class="time-label" data-t="time">Time</span>
-                    <span class="time-val" id="elapsed">00:00</span>
-                </div>
+                <div class="time-box"><span class="time-label" data-t="time">Time</span><span class="time-val"
+                        id="elapsed">00:00</span></div>
                 <button class="btn-icon" id="openSettingsBtn">⚙️</button>
                 <button class="btn-start" id="startBtn">START</button>
             </div>
@@ -690,52 +979,41 @@
 
         <div class="main-content">
             <aside id="sidebar">
-                <div class="sidebar-content" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
-                    <div class="control-group">
-                        <label data-t="type">Type</label>
-                        <select id="typeSelect">
+                <div class="sidebar-content"
+                    style="flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 16px;">
+
+                    <div class="control-group"><label data-t="type">Type</label><select id="typeSelect">
                             <option value="Letters" data-t="type_letters" selected>Letters</option>
                             <option value="Figures" data-t="type_figures">Figures</option>
                             <option value="Mixed" data-t="type_mixed">Mixed</option>
-                        </select>
+                        </select></div>
+                    <div class="control-group"><label data-t="speed">Speed (CPM)</label>
+                        <div class="num-input-wrap"><button class="btn-step" id="speedDec">-</button><input
+                                type="number" class="num-input-val" id="speedVal" value="100"><button class="btn-step"
+                                id="speedInc">+</button></div>
                     </div>
-                    <div class="control-group">
-                        <label data-t="speed">Speed (CPM)</label>
-                        <div class="num-input-wrap">
-                            <button class="btn-step" id="speedDec">-</button>
-                            <input type="number" class="num-input-val" id="speedVal" value="100">
-                            <button class="btn-step" id="speedInc">+</button>
-                        </div>
+                    <div class="control-group" id="displayModeWrap"><label data-t="mode">Display Mode</label>
+                        <div class="mode-toggle"><button class="btn-mode" id="modeGroupsBtn"
+                                data-t="fixed">FIXED</button><button class="btn-mode active" id="mode1minBtn">1
+                                MIN</button></div>
                     </div>
-                    <div class="control-group" id="displayModeWrap">
-                        <label data-t="mode">Display Mode</label>
-                        <div class="mode-toggle">
-                            <button class="btn-mode" id="modeGroupsBtn" data-t="fixed">FIXED</button>
-                            <button class="btn-mode active" id="mode1minBtn">1 MIN</button>
-                        </div>
+                    <div class="control-group" id="numGroupsWrap" style="display: none;"><label
+                            data-t="groups">Groups</label>
+                        <div class="num-input-wrap"><button class="btn-step" id="groupsDec">-</button><input
+                                type="number" class="num-input-val" id="groupsVal" value="25"><button class="btn-step"
+                                id="groupsInc">+</button></div>
                     </div>
-                    <div class="control-group" id="numGroupsWrap" style="display: none;">
-                        <label data-t="groups">Groups</label>
-                        <div class="num-input-wrap">
-                            <button class="btn-step" id="groupsDec">-</button>
-                            <input type="number" class="num-input-val" id="groupsVal" value="25">
-                            <button class="btn-step" id="groupsInc">+</button>
-                        </div>
-                    </div>
-                    <div id="compButtons" style="display: none; flex-direction: column; gap: 10px;">
-                        <button class="btn-sidebar-secondary" id="compHideBtn" data-t="hide_screen">Hide Screen</button>
-                        <button class="btn-sidebar-secondary" id="compFinishBtn" data-t="finish">Finish</button>
+                    <div id="compButtons" style="display: none; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <button class="btn-sidebar-secondary" id="compHideBtn" data-t="hide_screen"
+                            style="display: block;">Hide Screen</button>
+                        <button class="btn-sidebar-secondary" id="compFinishBtn" data-t="finish"
+                            style="display: block;">Finish</button>
                     </div>
                     
-                    <!-- Контактный блок -->
-                    <div style="margin-top: auto; padding-top: 40px; text-align: center;">
-                        <div style="opacity: 0.4; margin-bottom: 10px; font-size: 10px; font-weight: 800;">
-                            DEVELOPED BY<br>NICKOLAY BAKHVALOV
-                        </div>
-                        <a id="telegramContactLink" href="#" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #229ED9; color: white; border-radius: 10px; text-decoration: none; font-size: 11px; font-weight: 900;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.668l-2.95-.924c-.64-.203-.658-.64.136-.954l11.566-4.458c.537-.194 1.006.131.972.889z"/>
-                            </svg>
+                    <div style="margin-top: auto; padding-top: 40px; text-align: center; font-size: 10px; font-weight: 800; letter-spacing: 1px;">
+                        <div style="opacity: 0.4; margin-bottom: 10px;">DEVELOPED BY<br>NICKOLAY BAKHVALOV</div>
+                        <a href="https://t.me/Nikolay_Bah" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #229ED9; color: white; border-radius: 10px; text-decoration: none; font-size: 11px; font-weight: 900; letter-spacing: 0.5px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.17 13.668l-2.95-.924c-.64-.203-.658-.64.136-.954l11.566-4.458c.537-.194 1.006.131.972.889z"/></svg>
                             <span data-t="write_author">Написать</span>
                         </a>
                     </div>
@@ -748,73 +1026,18 @@
     </div>
 
     <script>
-        // Конфигурация Telegram контакта
-        (function() {
-            const contactLink = document.getElementById('telegramContactLink');
-            if (window.TelegramApp) {
-                // В Telegram - показываем информацию о боте
-                contactLink.href = '#';
-                contactLink.onclick = (e) => {
-                    e.preventDefault();
-                    window.TelegramApp.showPopup({
-                        title: 'HST Modern',
-                        message: 'Спасибо за использование тренажёра!\n\nПо вопросам и предложениям: @Nikolay_Bah',
-                        buttons: [{type: 'close', text: 'OK'}]
-                    });
-                };
-            } else {
-                // В обычном браузере - открываем Telegram
-                contactLink.href = 'https://t.me/Nikolay_Bah';
-                contactLink.target = '_blank';
-            }
-        })();
-
-        // Переводы
         const TRANSLATIONS = {
-            en: { 
-                settings: "Settings", language: "Language", app_mode: "App Mode", 
-                mode_training: "Training", mode_learning: "Learning", mode_rus: "Russian Letters", 
-                mode_comp: "Competition", tone: "Tone (Hz)", exclude_chars: "Exclude Characters",
-                char_pause: "Pause between chars", group_pause: "Pause between groups",
-                time: "Time", type: "Type", type_letters: "Letters", type_figures: "Figures",
-                type_mixed: "Mixed", speed: "Speed (CPM)", mode: "Display Mode", fixed: "FIXED",
-                groups: "Groups", apply: "Apply", start: "START", stop: "STOP", mode_1min: "1 MIN",
-                pause_between: "Pause between texts (sec)", hide_screen: "Hide Screen",
-                exit_mode: "Show Main Screen", finish: "Finish", next_text_in: "Next text in",
-                current_speed: "Current Speed", write_author: "Contact"
-            },
-            ru: { 
-                settings: "Настройки", language: "Язык", app_mode: "Режим работы",
-                mode_training: "Тренировка", mode_learning: "Обучение", mode_rus: "Русские буквы",
-                mode_comp: "Соревнование", tone: "Тон (Гц)", exclude_chars: "Исключить знаки",
-                char_pause: "Пауза между знаками", group_pause: "Пауза между группами",
-                time: "Время", type: "Тип текста", type_letters: "Буквы", type_figures: "Цифры",
-                type_mixed: "Смесь", speed: "Скорость (зн/мин)", mode: "Режим отображения",
-                fixed: "ФИКС.", groups: "Группы", apply: "Применить", start: "СТАРТ", stop: "СТОП",
-                mode_1min: "1 МИН", pause_between: "Пауза между текстами (сек)",
-                hide_screen: "Скрыть экран", exit_mode: "Показать экран", finish: "Закончить",
-                next_text_in: "Следующий текст через", current_speed: "Текущая скорость",
-                write_author: "Написать"
-            }
+            en: { settings: "Settings", language: "Language", app_mode: "App Mode", mode_training: "Training", mode_learning: "Learning", mode_rus: "Russian Letters", mode_comp: "Competition", tone: "Tone (Hz)", exclude_chars: "Exclude Characters", char_pause: "Pause between chars", group_pause: "Pause between groups", time: "Time", type: "Type", type_letters: "Letters", type_figures: "Figures", type_mixed: "Mixed", speed: "Speed (CPM)", mode: "Display Mode", fixed: "FIXED", groups: "Groups", update: "Update Text", apply: "Apply", start: "START", stop: "STOP", mode_1min: "1 MIN", pause_between: "Pause between texts (sec)", hide_screen: "Hide Screen", exit_mode: "Show Main Screen", finish: "Finish", next_text_in: "Next text in", current_speed: "Current Speed", how_to_install: "How to Install App", android_inst: "1. Open in Chrome\n2. Tap (⋮) menu\n3. Select 'Install' or 'Add to Home Screen'", ios_inst: "1. Open in Safari\n2. Tap the Share icon (□↑)\n3. Select 'Add to Home Screen'", install_tip: "💡 You can train offline in the app.", desktop_inst: "Chrome / Edge: click the install icon in the address bar (right side) or Menu → Install", write_author: "Contact" },
+            ru: { settings: "Настройки", language: "Язык", app_mode: "Режим работы", mode_training: "Тренировка", mode_learning: "Обучение", mode_rus: "Русские буквы", mode_comp: "Соревнование", tone: "Тон (Гц)", exclude_chars: "Исключить знаки", char_pause: "Пауза между знаками", group_pause: "Пауза между группами", time: "Время", type: "Тип текста", type_letters: "Буквы", type_figures: "Цифры", type_mixed: "Смесь", speed: "Скорость (зн/мин)", mode: "Режим отображения", fixed: "ФИКС.", groups: "Группы", update: "Обновить текст", apply: "Применить", start: "СТАРТ", stop: "СТОП", mode_1min: "1 МИН", pause_between: "Пауза между текстами (сек)", hide_screen: "Скрыть экран", exit_mode: "Показать экран", finish: "Закончить", next_text_in: "Следующий текст через", current_speed: "Текущая скорость", how_to_install: "Как установить приложение", android_inst: "1. Откройте в Chrome\n2. Нажмите (⋮) в правом углу\n3. Нажмите «Установить» или «На главный экран»", ios_inst: "1. Откройте в Safari\n2. Нажмите «Поделиться» (□↑)\n3. Выберите «На экран «Домой»»", install_tip: "💡 В приложении можно тренироваться без интернета.", desktop_inst: "Chrome / Edge: нажмите значок установки в адресной строке (справа) или Меню → Установить", write_author: "Написать" }
         };
 
-        // Азбука Морзе
         const M = {
-            "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", 
-            "H": "....", "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", 
-            "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-", "U": "..-", 
-            "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..",
-            "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", 
-            "6": "-....", "7": "--...", "8": "---..", "9": "----.", "0": "-----",
-            "А": ".-", "Б": "-...", "В": ".--", "Г": "--.", "Д": "-..", "Е": ".", "Ж": "...-", 
-            "З": "--..", "И": "..", "Й": ".---", "К": "-.-", "Л": ".-..", "М": "--", "Н": "-.", 
-            "О": "---", "П": ".--.", "Р": ".-.", "С": "...", "Т": "-", "У": "..-", "Ф": "..-.", 
-            "Х": "....", "Ц": "-.-.", "Ч": "---.", "Ш": "----", "Щ": "--.-", "Э": "..-..", 
-            "Ю": "..--", "Я": ".-.-", "Ь": "-..-", "Ы": "-.--", "Ъ": "--.--",
+            "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", "H": "....", "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.", "S": "...", "T": "-", "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..",
+            "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...", "8": "---..", "9": "----.", "0": "-----",
+            "=": "-...-", "А": ".-", "Б": "-...", "В": ".--", "Г": "--.", "Д": "-..", "Е": ".", "Ж": "...-", "З": "--..", "И": "..", "Й": ".---", "К": "-.-", "Л": ".-..", "М": "--", "Н": "-.", "О": "---", "П": ".--.", "Р": ".-.", "С": "...", "Т": "-", "У": "..-", "Ф": "..-.", "Х": "....", "Ц": "-.-.", "Ч": "---.", "Ш": "----", "Щ": "--.-", "Э": "..-..", "Ю": "..--", "Я": ".-.-", "Ь": "-..-", "Ы": "-.--", "Ъ": "--.--",
             ".": ".-.-.-", ",": "--..--", "?": "..--..", "/": "-..-.", "AR": ".-.-."
         };
 
-        // Аудио движок
         class MorseEngine {
             constructor() {
                 this.ctx = null;
@@ -836,14 +1059,18 @@
                 if (!this.ctx) {
                     try {
                         this.ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+                        
+                        // Professional Signal Chain to prevent OS "auto-tuning"
                         this.comp = this.ctx.createDynamicsCompressor();
                         this.comp.threshold.setValueAtTime(-24, this.ctx.currentTime);
                         this.comp.knee.setValueAtTime(30, this.ctx.currentTime);
                         this.comp.ratio.setValueAtTime(12, this.ctx.currentTime);
                         this.comp.attack.setValueAtTime(0.003, this.ctx.currentTime);
                         this.comp.release.setValueAtTime(0.25, this.ctx.currentTime);
+
                         this.gain = this.ctx.createGain();
                         this.gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                        
                         this.gain.connect(this.comp);
                         this.comp.connect(this.ctx.destination);
                     } catch (e) { console.error("Audio init error:", e); }
@@ -854,6 +1081,7 @@
             play(toks, dot, pc, pg, onS, onD) {
                 this.stop();
                 this.init();
+                
                 this.tokens = [...toks];
                 this.dot = dot; this.pc = pc; this.pg = pg;
                 this.onS = onS; this.onD = onD;
@@ -862,12 +1090,16 @@
                 const o = this.ctx.createOscillator();
                 const g = this.ctx.createGain();
                 const f = this.ctx.createBiquadFilter();
+                
+                // Stable initialization relative to currentTime
                 const now = this.ctx.currentTime;
                 f.type = 'lowpass'; 
                 f.frequency.setValueAtTime(2400, now); 
                 f.Q.setValueAtTime(0, now);
+                
                 o.type = 'sine'; 
                 o.frequency.setValueAtTime(this.freq, now);
+                
                 g.gain.setValueAtTime(0, now);
                 o.connect(g); g.connect(f); f.connect(this.gain);
                 this.osc = o; this.subGain = g;
@@ -875,6 +1107,7 @@
                 this.nextT = now + 0.25; 
                 this.gain.gain.cancelScheduledValues(now);
                 this.gain.gain.linearRampToValueAtTime(0.5, now + 0.05);
+
                 o.start(now);
                 this._tick();
             }
@@ -882,11 +1115,13 @@
             _tick() {
                 if (!this.running || !this.ctx) return;
                 const now = this.ctx.currentTime;
-                const transition = 0.002;
+                const transition = 0.002; // Slightly softer transition (2ms) prevents clicks
 
+                // 1. Audio Scheduling
                 while (this.tokens.length > 0 && this.nextT < now + this.lookahead) {
                     const tk = this.tokens.shift();
                     this.vQueue.push({ t: this.nextT, g: tk.g, c: tk.c });
+
                     if (tk.m) {
                         for (let b of tk.m) {
                             const d = (b === '.' ? this.dot : this.dot * 3);
@@ -901,6 +1136,7 @@
                     if (tk.isSpace) this.nextT += this.dot * (this.pg - this.pc);
                 }
 
+                // 2. Visual Synchronization
                 const outLat = (this.ctx.outputLatency || 0.08); 
                 while (this.vQueue.length > 0 && this.vQueue[0].t <= now - outLat) {
                     const ev = this.vQueue.shift();
@@ -928,26 +1164,35 @@
                             this.gain.gain.linearRampToValueAtTime(0, now + 0.02);
                         }
                         this.osc.stop(now + 0.1);
-                    } catch (e) {}
+                    } catch (e) { }
                     this.osc = null;
+                }
+                if (this.ctx && this.ctx.state === 'running') {
+                    setTimeout(() => { if (!this.running && this.ctx) this.ctx.suspend(); }, 5000);
                 }
             }
         }
 
-        // Состояние приложения
-        let speed = 100, numGroups = 25, freq = 750, mode = '1min', textType = 'Letters', 
-            playing = false, groups = [], lang = 'ru', appMode = 'training';
+        let speed = 100, numGroups = 25, freq = 750, mode = '1min', textType = 'Letters', playing = false, groups = [], lang = 'en', appMode = 'training';
         let pChar = 3, pGroup = 7, excluded = "";
         let compPause = 30, compLogs = [], compFinishedCount = 0;
         const engine = new MorseEngine();
-        let timerId = null, countdownTimer = null, wakeLock = null;
+        let timerId = null, countdownTimer = null;
+        let wakeLock = null;
 
         const requestWakeLock = async () => {
             try {
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Screen Wake Lock was released');
+                        wakeLock = null;
+                    });
+                    console.log('Screen Wake Lock is active');
                 }
-            } catch (err) {}
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`);
+            }
         };
 
         const releaseWakeLock = () => {
@@ -971,67 +1216,35 @@
         const updateLang = () => {
             document.querySelectorAll('[data-t]').forEach(el => {
                 const k = el.getAttribute('data-t');
-                if (TRANSLATIONS[lang] && TRANSLATIONS[lang][k]) {
-                    el.innerText = TRANSLATIONS[lang][k];
-                }
+                if (TRANSLATIONS[lang][k]) el.innerText = TRANSLATIONS[lang][k];
             });
-            
-            // Обновляем кнопки старт
-            const startText = playing ? TRANSLATIONS[lang].stop : TRANSLATIONS[lang].start;
-            document.querySelectorAll('.btn-start').forEach(el => el.innerText = startText);
-            
-            // Обновляем главную кнопку Telegram
-            if (window.TelegramApp) {
-                window.TelegramApp.MainButton.setText(playing ? '⏹️ СТОП' : '▶️ СТАРТ');
-            }
-            
+            document.querySelectorAll('.btn-start').forEach(el => el.innerText = playing ? TRANSLATIONS[lang].stop : TRANSLATIONS[lang].start);
             document.getElementById('mode1minBtn').innerText = TRANSLATIONS[lang].mode_1min;
         };
 
         const updateUI = () => {
-            document.getElementById('speedVal').value = speed;
-            document.getElementById('groupsVal').value = numGroups;
-            document.getElementById('freqVal').value = freq;
-            document.getElementById('freqRange').value = freq;
-            document.getElementById('pCharVal').value = pChar;
-            document.getElementById('pGroupVal').value = pGroup;
-            document.getElementById('excludeChars').value = excluded;
-            document.getElementById('compPauseVal').value = compPause;
-            
-            if (document.getElementById('numGroupsWrap')) {
-                document.getElementById('numGroupsWrap').style.display = 
-                    (mode === 'Groups' && appMode !== 'comp') ? 'flex' : 'none';
-            }
-            if (document.getElementById('displayModeWrap')) {
-                document.getElementById('displayModeWrap').style.display = 
-                    appMode === 'comp' ? 'none' : 'flex';
-            }
-            
-            document.getElementById('modeGroupsBtn').classList.toggle('active', mode === 'Groups');
-            document.getElementById('mode1minBtn').classList.toggle('active', mode === '1min');
-            document.getElementById('learningOptions').style.display = 
-                (appMode === 'learning' || appMode === 'rus') ? 'flex' : 'none';
-            document.getElementById('compOptions').style.display = 
-                appMode === 'comp' ? 'flex' : 'none';
-            document.getElementById('compButtons').style.display = 
-                appMode === 'comp' ? 'flex' : 'none';
-            
-            document.getElementById('langSelect').value = lang;
-            document.getElementById('appModeSelect').value = appMode;
-            
-            updateLang();
+            try {
+                document.getElementById('speedVal').value = speed; document.getElementById('groupsVal').value = numGroups; document.getElementById('freqVal').value = freq;
+                document.getElementById('freqRange').value = freq;
+                document.getElementById('pCharVal').value = pChar; document.getElementById('pGroupVal').value = pGroup; document.getElementById('excludeChars').value = excluded;
+                document.getElementById('compPauseVal').value = compPause;
+                if (document.getElementById('numGroupsWrap')) document.getElementById('numGroupsWrap').style.display = (mode === 'Groups' && appMode !== 'comp') ? 'flex' : 'none';
+                if (document.getElementById('displayModeWrap')) document.getElementById('displayModeWrap').style.display = appMode === 'comp' ? 'none' : 'flex';
+                document.getElementById('modeGroupsBtn').classList.toggle('active', mode === 'Groups'); document.getElementById('mode1minBtn').classList.toggle('active', mode === '1min');
+                document.getElementById('learningOptions').style.display = (appMode === 'learning' || appMode === 'rus') ? 'flex' : 'none';
+                document.getElementById('compOptions').style.display = appMode === 'comp' ? 'flex' : 'none';
+                document.getElementById('compButtons').style.display = appMode === 'comp' ? 'flex' : 'none';
+                document.getElementById('langSelect').value = lang; document.getElementById('appModeSelect').value = appMode;
+                updateLang();
+            } catch (e) { console.error("UI Update failed:", e); }
         };
 
         const generate = (noRender) => {
             const count = (mode === '1min' || appMode === 'comp') ? Math.ceil(speed / 5) : numGroups;
-            let poolStr = textType === 'Letters' ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : 
-                         textType === 'Figures' ? "0123456789" : 
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,/?=";
-            
+            let poolStr = textType === 'Letters' ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : textType === 'Figures' ? "0123456789" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,/?=";
             if (appMode === 'rus') {
                 poolStr = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯЬЫ";
             }
-            
             let pool = poolStr.split('');
             if ((appMode === 'learning' || appMode === 'rus') && excluded) {
                 const ex = excluded.toUpperCase();
@@ -1040,52 +1253,43 @@
             if (pool.length === 0) pool = ["?"];
 
             groups = [];
+            let last1 = "", last2 = "";
             for (let i = 0; i < count; i++) {
                 let g = "";
                 for (let j = 0; j < 5; j++) {
-                    g += pool[Math.floor(Math.random() * pool.length)];
+                    let char = "";
+                    let attempts = 0;
+                    do {
+                        char = pool[Math.floor(Math.random() * pool.length)];
+                        attempts++;
+                    } while (char === last1 && char === last2 && attempts < 10);
+                    g += char;
+                    last2 = last1;
+                    last1 = char;
                 }
                 groups.push(g);
             }
-            
-            if (!noRender) { 
-                render(); 
-                document.getElementById('elapsed').innerText = '00:00'; 
-            }
+            if (!noRender) { render(); document.getElementById('elapsed').innerText = '00:00'; }
             engine.stop();
         };
 
         const render = () => {
-            const grid = document.getElementById('grid'); 
-            grid.innerHTML = '';
+            const grid = document.getElementById('grid'); grid.innerHTML = '';
             groups.forEach((g, gi) => {
-                const row = document.createElement('div'); 
-                row.className = 'group-row';
-                g.split('').forEach((c, ci) => { 
-                    const span = document.createElement('div'); 
-                    span.className = 'char'; 
-                    span.id = `c-${gi}-${ci}`; 
-                    span.innerText = c; 
-                    row.appendChild(span); 
-                });
+                const row = document.createElement('div'); row.className = 'group-row';
+                g.split('').forEach((c, ci) => { const span = document.createElement('div'); span.className = 'char'; span.id = `c-${gi}-${ci}`; span.innerText = c; row.appendChild(span); });
                 grid.appendChild(row);
             });
         };
 
         const start = () => {
+            console.log("Start button clicked. AppMode:", appMode);
             requestWakeLock();
             closeSidebar();
-            
-            if (playing) { 
-                stopAll(); 
-                return; 
-            }
-            
+            if (playing) { stopAll(); return; }
             generate();
             if (appMode === 'comp' && compFinishedCount === 0) compLogs = [];
-            playing = true; 
-            updateUI(); 
-            engine.freq = freq;
+            playing = true; updateUI(); engine.freq = freq;
 
             const head = [];
             if (appMode === 'comp') {
@@ -1095,18 +1299,9 @@
                 String(speed).split('').forEach((d, i) => head.push({ g: -2, c: 10 + i, m: M[d] || '' }));
                 head.push({ isSpace: true, m: '' });
             }
-            "VVV".split('').forEach((c, i) => head.push({ g: -2, c: 20 + i, m: M[c] || '' }));
-            head.push({ g: -2, c: 23, m: M['='] || '-...-' }); // Морзе для "=" это "-...-"
-            head.push({ isSpace: true, m: '' });
-            
-            const body = []; 
-            groups.forEach((g, gi) => { 
-                g.split('').forEach((c, ci) => body.push({ g: gi, c: ci, m: M[c.toUpperCase()] || '' })); 
-                body.push({ isSpace: true, m: '' }); 
-            });
-            
-            const tail = []; 
-            tail.push({ g: -3, c: 0, m: M['AR'] });
+            "VVV=".split('').forEach((c, i) => head.push({ g: -2, c: 20 + i, m: M[c] || '' })); head.push({ isSpace: true, m: '' });
+            const body = []; groups.forEach((g, gi) => { g.split('').forEach((c, ci) => body.push({ g: gi, c: ci, m: M[c.toUpperCase()] || '' })); body.push({ isSpace: true, m: '' }); });
+            const tail = []; tail.push({ g: -3, c: 0, m: M['AR'] });
 
             const totalChars = groups.length * 5;
             const targetSecs = (totalChars / speed) * 60;
@@ -1130,16 +1325,12 @@
             timerId = setInterval(() => {
                 const d = Date.now() - startT;
                 if (d < 0) return;
-                const m = Math.floor(d / 60000).toString().padStart(2, '0');
-                const s = Math.floor((d % 60000) / 1000).toString().padStart(2, '0');
-                const ts = `${m}:${s}`; 
-                document.getElementById('elapsed').innerText = ts; 
-                document.getElementById('compTimeVal').innerText = ts;
-                if (d >= targetSecs * 1000) { 
-                    clearInterval(timerId); 
-                    timerId = null; 
-                }
+                const m = Math.floor(d / 60000).toString().padStart(2, '0'), s = Math.floor((d % 60000) / 1000).toString().padStart(2, '0');
+                const ts = `${m}:${s}`; document.getElementById('elapsed').innerText = ts; document.getElementById('compTimeVal').innerText = ts;
+                if (d >= targetSecs * 1000) { clearInterval(timerId); timerId = null; }
             }, 100);
+
+            console.log("Starting play...", { totalChars, targetSecs, unitsBody, realDot });
 
             let lastActiveCharEl = null;
             engine.play(head.concat(body, tail), realDot, pChar, pGroup, (g, c) => {
@@ -1148,6 +1339,18 @@
                     if (lastActiveCharEl) lastActiveCharEl.classList.remove('active');
                     el.classList.add('active');
                     lastActiveCharEl = el;
+                    
+                    // Auto-scroll logic for mobile
+                    if (g >= 0 && c === 0) {
+                        const main = document.querySelector('main');
+                        if (main) {
+                            const rect = el.getBoundingClientRect();
+                            const mainRect = main.getBoundingClientRect();
+                            if (rect.bottom > mainRect.bottom - 100 || rect.top < mainRect.top + 100) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        }
+                    }
                 }
             }, onDone);
         };
@@ -1158,25 +1361,17 @@
                 document.getElementById('compFinishBtn').disabled = false;
                 document.getElementById('compFinishBtnOverlay').disabled = false;
                 startCompPause();
-            } else { 
-                stopAll(); 
-            }
+            } else { stopAll(); }
         };
 
         const startCompPause = () => {
-            playing = false; 
-            if (timerId) clearInterval(timerId); 
-            timerId = null; 
-            updateUI();
+            playing = false; if (timerId) clearInterval(timerId); timerId = null; updateUI();
             let remain = compPause;
             countdownTimer = setInterval(() => {
                 remain--;
                 if (remain <= 0) {
-                    clearInterval(countdownTimer); 
-                    countdownTimer = null;
-                    speed += 10; 
-                    generate(); 
-                    start();
+                    clearInterval(countdownTimer); countdownTimer = null;
+                    speed += 10; generate(); start();
                 } else {
                     const msg = `${TRANSLATIONS[lang].next_text_in}: ${remain}s`;
                     document.getElementById('elapsed').innerText = msg;
@@ -1188,67 +1383,47 @@
         const stopAll = () => {
             playing = false;
             releaseWakeLock();
-            if (timerId) clearInterval(timerId); 
-            timerId = null;
-            if (countdownTimer) clearInterval(countdownTimer); 
-            countdownTimer = null;
-            engine.stop(); 
-            updateUI();
+            if (timerId) clearInterval(timerId); timerId = null;
+            if (countdownTimer) clearInterval(countdownTimer); countdownTimer = null;
+            engine.stop(); updateUI();
             document.querySelectorAll('.char.active').forEach(e => e.classList.remove('active'));
         };
 
         const finishComp = () => {
             if (compLogs.length === 0) return;
-            
-            // Отправляем данные в Telegram если доступно
-            if (window.TelegramApp) {
-                window.TelegramApp.sendData(JSON.stringify({
-                    action: 'comp_finished',
-                    speed: speed,
-                    logs: compLogs.length,
-                    timestamp: new Date().toISOString()
-                }));
-                window.TelegramApp.close();
-            }
-            
             const content = compLogs.map(l => `SPEED: ${l.speed} CPM\n------------------\n${l.text}`).join('\n\n\n');
             const blob = new Blob([content], { type: 'text/plain' });
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob); 
-            a.download = `HST_Comp_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
+            a.href = URL.createObjectURL(blob); a.download = `HST_Comp_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.txt`;
             a.click();
-            
-            compFinishedCount = 0; 
-            compLogs = []; 
-            stopAll();
+            compFinishedCount = 0; compLogs = []; stopAll();
             releaseWakeLock();
             document.getElementById('compOverlay').classList.remove('open');
         };
 
-        const closeSidebar = () => { 
-            document.getElementById('sidebar').classList.remove('open'); 
-            document.getElementById('overlay').classList.remove('open'); 
-        };
-
-        // Инициализация обработчиков
+        const closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); };
         document.getElementById('menuBtn').onclick = () => {
+            // Block sidebar while comp overlay is shown (playing/paused in competition mode)
             if (document.getElementById('compOverlay').classList.contains('open')) return;
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('overlay').classList.toggle('open');
         };
-        
         document.getElementById('overlay').onclick = closeSidebar;
-        
         document.getElementById('openSettingsBtn').onclick = () => {
+            // Sync all modal fields to current state before showing
             document.getElementById('langSelect').value = lang;
             document.getElementById('appModeSelect').value = appMode;
             document.getElementById('freqVal').value = freq;
             document.getElementById('freqRange').value = freq;
+            document.getElementById('pCharVal').value = pChar;
+            document.getElementById('pGroupVal').value = pGroup;
+            document.getElementById('compPauseVal').value = compPause;
+            document.getElementById('excludeChars').value = excluded;
             document.getElementById('settingsModal').classList.add('open');
         };
-        
-        document.getElementById('closeSettings').onclick = () => 
-            document.getElementById('settingsModal').classList.remove('open');
+        document.getElementById('closeSettings').onclick = () => document.getElementById('settingsModal').classList.remove('open');
+        document.getElementById('langSelect').onchange = (e) => { lang = e.target.value; updateLang(); };
+        document.getElementById('appModeSelect').onchange = (e) => { appMode = e.target.value; updateUI(); generate(); if (appMode !== 'comp') document.getElementById('compOverlay').classList.remove('open'); };
         
         document.getElementById('applySettings').onclick = () => {
             lang = document.getElementById('langSelect').value;
@@ -1263,49 +1438,52 @@
             updateUI();
             generate();
             closeSidebar();
+            console.log("Settings applied:", { lang, appMode, pChar, pGroup, freq });
         };
 
         document.getElementById('typeSelect').onchange = (e) => { textType = e.target.value; generate(); };
+        document.getElementById('speedVal').onchange = (e) => { speed = Math.max(20, Math.min(400, parseInt(e.target.value) || 100)); updateUI(); };
         document.getElementById('speedDec').onclick = () => { speed = Math.max(20, speed - 10); updateUI(); };
         document.getElementById('speedInc').onclick = () => { speed = Math.min(400, speed + 10); updateUI(); };
+        document.getElementById('freqDec').onclick = () => { freq = Math.max(300, freq - 10); engine.freq = freq; updateUI(); };
+        document.getElementById('freqInc').onclick = () => { freq = Math.min(1000, freq + 10); engine.freq = freq; updateUI(); };
+        document.getElementById('freqVal').onchange = (e) => { freq = Math.max(300, Math.min(1000, parseInt(e.target.value) || 750)); engine.freq = freq; updateUI(); };
+        document.getElementById('freqRange').oninput = (e) => { freq = parseInt(e.target.value); engine.freq = freq; updateUI(); };
         document.getElementById('modeGroupsBtn').onclick = () => { mode = 'Groups'; updateUI(); generate(); };
         document.getElementById('mode1minBtn').onclick = () => { mode = '1min'; updateUI(); generate(); };
-        document.getElementById('compHideBtn').onclick = () => { 
-            document.getElementById('compOverlay').classList.add('open'); 
-            closeSidebar(); 
-        };
-        document.getElementById('compExitBtn').onclick = () => 
-            document.getElementById('compOverlay').classList.remove('open');
+        document.getElementById('groupsDec').onclick = () => { numGroups = Math.max(1, numGroups - 5); updateUI(); generate(); };
+        document.getElementById('groupsInc').onclick = () => { numGroups = Math.min(250, numGroups + 5); updateUI(); generate(); };
+        document.getElementById('groupsVal').onchange = (e) => { numGroups = Math.max(1, Math.min(250, parseInt(e.target.value) || 25)); updateUI(); generate(); };
+        document.getElementById('pCharDec').onclick = () => { pChar = Math.max(3, pChar - 1); updateUI(); };
+        document.getElementById('pCharInc').onclick = () => { pChar = Math.min(20, pChar + 1); updateUI(); };
+        document.getElementById('pGroupDec').onclick = () => { pGroup = Math.max(7, pGroup - 1); updateUI(); };
+        document.getElementById('pGroupInc').onclick = () => { pGroup = Math.min(50, pGroup + 1); updateUI(); };
+        document.getElementById('compPauseDec').onclick = () => { compPause = Math.max(20, compPause - 10); updateUI(); };
+        document.getElementById('compPauseInc').onclick = () => { compPause = Math.min(120, compPause + 10); updateUI(); };
+        document.getElementById('compHideBtn').onclick = () => { document.getElementById('compOverlay').classList.add('open'); closeSidebar(); };
+        document.getElementById('compExitBtn').onclick = () => document.getElementById('compOverlay').classList.remove('open');
         document.getElementById('compFinishBtn').onclick = finishComp;
         document.getElementById('compFinishBtnOverlay').onclick = finishComp;
-        
         document.querySelectorAll('.btn-start').forEach(btn => btn.onclick = start);
         
-        // Синхронизация с кнопкой Telegram
-        if (window.TelegramApp) {
-            window.TelegramApp.MainButton.onClick(start);
-            
-            // Обновляем текст кнопки при изменении состояния
-            const observer = new MutationObserver(() => {
-                const btn = document.querySelector('.btn-start');
-                if (btn) {
-                    const isPlaying = btn.innerText.includes('STOP') || btn.innerText.includes('СТОП');
-                    window.TelegramApp.MainButton.setText(isPlaying ? '⏹️ СТОП' : '▶️ СТАРТ');
+        generate(); updateUI();
+
+        document.addEventListener('visibilitychange', async () => {
+            if (document.hidden) {
+                // When PWA goes to background — release lock (browser does it anyway)
+                if (playing) stopAll();
+            } else {
+                // When screen wakes up / app returns to foreground —
+                // re-request WakeLock (it is automatically released by the OS on screen-off)
+                if (playing) {
+                    await requestWakeLock();
                 }
-            });
-            observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-        }
-        
-        // Запуск
-        generate(); 
-        updateUI();
-        
-        // Service Worker
+            }
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => 
-                    console.log('SW registration failed:', err)
-                );
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
             });
         }
     </script>
